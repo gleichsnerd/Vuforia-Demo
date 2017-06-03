@@ -9,12 +9,9 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 
 #import <QCAR/UIGLViewProtocol.h>
 
-//#import "Texture.h"
-//#import "SampleApplicationSession.h"
-//#import "SampleApplication3DModel.h"
-
-
-#define NUM_AUGMENTATION_TEXTURES 4
+#import "Texture.h"
+#import "TimeMachineSession.h"
+#import "SampleApplication3DModel.h"
 
 
 // EAGLView is a subclass of UIView and conforms to the informal protocol
@@ -39,15 +36,18 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
     GLint texSampler2DHandle;
     
     // Texture used when rendering augmentation
-    Texture* augmentationTexture[NUM_AUGMENTATION_TEXTURES];
+    NSMutableArray *augmentationTexture;
     
     BOOL offTargetTrackingEnabled;
     SampleApplication3DModel * buildingModel;
 
-    SampleApplicationSession * vapp;
+    TimeMachineSession * vapp;
 }
 
-- (id)initWithFrame:(CGRect)frame appSession:(SampleApplicationSession *) app;
+@property NSArray *textureFilenames;
+@property NSMutableArray *imageCoordinates;
+
+- (id)initWithFrame:(CGRect)frame appSession:(TimeMachineSession *) app textureFilenames:(NSArray *) textureFilenames planeVertices:(NSMutableArray *) planeVertices;
 
 - (void)finishOpenGLESCommands;
 - (void)freeOpenGLESResources;

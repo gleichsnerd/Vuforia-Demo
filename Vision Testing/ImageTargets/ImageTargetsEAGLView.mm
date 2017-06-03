@@ -22,6 +22,7 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 #import "SampleApplicationUtils.h"
 #import "SampleApplicationShaderUtils.h"
 #import "Teapot.h"
+#import "Plane.h"
 
 
 //******************************************************************************
@@ -42,21 +43,23 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 //
 //******************************************************************************
 
-
+#define float(x) [NSNumber numberWithFloat:x]
 namespace {
     // --- Data private to this unit ---
 
-    // Teapot texture filenames
+    /* plane texture filenames
     const char* textureFilenames[] = {
+        "space_sloth 2.jpg",
+        "space_sloth 3.jpg",
         "TextureTeapotBrass.png",
         "TextureTeapotBlue.png",
         "TextureTeapotRed.png",
         "building_texture.jpeg"
     };
-    
+    */
     // Model scale factor
-    const float kObjectScaleNormal = 3.0f;
-    const float kObjectScaleOffTargetTracking = 12.0f;
+    const float kObjectScaleNormal = 1.0f;
+    const float kObjectScaleOffTargetTracking = 1.0f;
 }
 
 
@@ -84,20 +87,51 @@ namespace {
 //------------------------------------------------------------------------------
 #pragma mark - Lifecycle
 
-- (id)initWithFrame:(CGRect)frame appSession:(SampleApplicationSession *) app
+- (float *) NSArrayToFloatArray:(NSArray*)array {
+    static float returnArray[12];
+    
+    for(int i = 0; i < 12; i++) {
+        returnArray[i] = [[array objectAtIndex:i] floatValue];
+    }
+    
+    return returnArray;
+}
+
+- (id)initWithFrame:(CGRect)frame appSession:(TimeMachineSession *) app textureFilenames:(NSArray *) textureFilenames planeVertices:(NSMutableArray *) planeVertices
 {
     self = [super initWithFrame:frame];
-    
     if (self) {
         vapp = app;
+        
+        vapp.planeVertices = [NSMutableArray arrayWithObjects:
+                                                           [NSArray arrayWithObjects:
+                                                            [NSNumber numberWithFloat:-300.0], [NSNumber numberWithFloat:-382.5], [NSNumber numberWithFloat:0.0], //bottom-left corner
+                                                            [NSNumber numberWithFloat:300.0], [NSNumber numberWithFloat:-382.5], [NSNumber numberWithFloat:0.0], //bottom-right corner
+                                                            [NSNumber numberWithFloat:300.0], [NSNumber numberWithFloat:382.5], [NSNumber numberWithFloat:0.0], //top-right corner
+                                                            [NSNumber numberWithFloat:-300.0], [NSNumber numberWithFloat:382.5], [NSNumber numberWithFloat:0.0] //top-left corner
+                                                            , nil], nil];
+        
         // Enable retina mode if available on this device
         if (YES == [vapp isRetinaDisplay]) {
             [self setContentScaleFactor:2.0f];
         }
         
+        self.textureFilenames = textureFilenames;/*@[
+            @"space_sloth 2.jpg",
+            @"space_sloth 3.jpg",
+            @"TextureTeapotBrass.png",
+            @"TextureTeapotBlue.png",
+            @"TextureTeapotRed.png",
+            @"building_texture.jpeg"
+        ];//textureFilenames; */
+        
+        augmentationTexture = [[NSMutableArray alloc] init];
         // Load the augmentation textures
-        for (int i = 0; i < NUM_AUGMENTATION_TEXTURES; ++i) {
-            augmentationTexture[i] = [[Texture alloc] initWithImageFile:[NSString stringWithCString:textureFilenames[i] encoding:NSASCIIStringEncoding]];
+        for (int i = 0; i < [self.textureFilenames count]; ++i) {
+            NSString  *documentDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+            NSString  *filePath = [documentDirectory stringByAppendingPathComponent: _textureFilenames[i]];
+            BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
+            augmentationTexture[i] = [[Texture alloc] initWithImageFile:filePath];
         }
 
         // Create the OpenGL ES context
@@ -111,14 +145,17 @@ namespace {
         
         // Generate the OpenGL ES texture and upload the texture data for use
         // when rendering the augmentation
-        for (int i = 0; i < NUM_AUGMENTATION_TEXTURES; ++i) {
+        for (int i = 0; i < [self.textureFilenames count]; ++i) {
             GLuint textureID;
             glGenTextures(1, &textureID);
             [augmentationTexture[i] setTextureID:textureID];
             glBindTexture(GL_TEXTURE_2D, textureID);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, [augmentationTexture[i] width], [augmentationTexture[i] height], 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)[augmentationTexture[i] pngData]);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            Texture *tex = augmentationTexture[i];
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, [tex width], [tex height], 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)[augmentationTexture[i] pngData]);
         }
 
         offTargetTrackingEnabled = NO;
@@ -195,7 +232,6 @@ namespace {
     else
         glFrontFace(GL_CCW);   //Back camera
     
-    
     for (int i = 0; i < state.getNumTrackableResults(); ++i) {
         // Get the trackable
         const QCAR::TrackableResult* result = state.getTrackableResult(i);
@@ -221,39 +257,41 @@ namespace {
         
         if (offTargetTrackingEnabled) {
             glVertexAttribPointer(vertexHandle, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)buildingModel.vertices);
-            glVertexAttribPointer(normalHandle, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)buildingModel.normals);
+//            glVertexAttribPointer(normalHandle, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)buildingModel.normals);
             glVertexAttribPointer(textureCoordHandle, 2, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)buildingModel.texCoords);
         } else {
-            glVertexAttribPointer(vertexHandle, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)teapotVertices);
-            glVertexAttribPointer(normalHandle, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)teapotNormals);
-            glVertexAttribPointer(textureCoordHandle, 2, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)teapotTexCoords);
+            glVertexAttribPointer(vertexHandle, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)[self NSArrayToFloatArray:vapp.planeVertices[0]]);
+//            glVertexAttribPointer(normalHandle, 1, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)planeNormals);
+            glVertexAttribPointer(textureCoordHandle, 2, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)planeTexCoords);
         }
         
         glEnableVertexAttribArray(vertexHandle);
-        glEnableVertexAttribArray(normalHandle);
+//        glEnableVertexAttribArray(normalHandle);
         glEnableVertexAttribArray(textureCoordHandle);
         
         // Choose the texture based on the target name
         int targetIndex = 0; // "stones"
-        if (!strcmp(trackable.getName(), "chips"))
-            targetIndex = 1;
-        else if (!strcmp(trackable.getName(), "tarmac"))
-            targetIndex = 2;
+        NSString *imageName = [NSString stringWithFormat:@"%s", trackable.getName()];
+        targetIndex = [imageName intValue];
         
+//        if (!strcmp(trackable.getName(), "1"))
+//            targetIndex = 1;
+//        else if (!strcmp(trackable.getName(), "2"))
+//            targetIndex = 2;
+//        
         glActiveTexture(GL_TEXTURE0);
         
-        if (offTargetTrackingEnabled) {
-            glBindTexture(GL_TEXTURE_2D, augmentationTexture[3].textureID);
-        } else {
-            glBindTexture(GL_TEXTURE_2D, augmentationTexture[targetIndex].textureID);
-        }
+        Texture *tex = augmentationTexture[targetIndex];
+        
+        glBindTexture(GL_TEXTURE_2D, tex.textureID);
+    
         glUniformMatrix4fv(mvpMatrixHandle, 1, GL_FALSE, (const GLfloat*)&modelViewProjection.data[0]);
         glUniform1i(texSampler2DHandle, 0 /*GL_TEXTURE0*/);
         
         if (offTargetTrackingEnabled) {
             glDrawArrays(GL_TRIANGLES, 0, buildingModel.numVertices);
         } else {
-            glDrawElements(GL_TRIANGLES, NUM_TEAPOT_OBJECT_INDEX, GL_UNSIGNED_SHORT, (const GLvoid*)teapotIndices);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (const GLvoid*)planeIndices);
         }
         
         SampleApplicationUtils::checkGlError("EAGLView renderFrameQCAR");
@@ -264,7 +302,7 @@ namespace {
     glDisable(GL_CULL_FACE);
     
     glDisableVertexAttribArray(vertexHandle);
-    glDisableVertexAttribArray(normalHandle);
+//    glDisableVertexAttribArray(normalHandle);
     glDisableVertexAttribArray(textureCoordHandle);
     
     QCAR::Renderer::getInstance().end();

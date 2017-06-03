@@ -7,9 +7,9 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 
 #import <UIKit/UIKit.h>
 
-@class SampleAppLeftMenuViewController;
+@class TimeMachineLeftMenuViewController;
 
-@interface SampleAppSlidingMenuController : UIViewController <UIGestureRecognizerDelegate>{
+@interface TimeMachineSlidingMenuController : UIViewController <UIGestureRecognizerDelegate>{
     
     // we keep track of the gestu recognizer in order to be able to enable/disable them
     UITapGestureRecognizer * tapGestureRecognizer;

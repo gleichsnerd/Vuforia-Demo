@@ -1,9 +1,9 @@
 /*===============================================================================
-Copyright (c) 2012-2014 Qualcomm Connected Experiences, Inc. All Rights Reserved.
-
-Vuforia is a trademark of QUALCOMM Incorporated, registered in the United States 
-and other countries. Trademarks of QUALCOMM Incorporated are used with permission.
-===============================================================================*/
+ Copyright (c) 2012-2014 Qualcomm Connected Experiences, Inc. All Rights Reserved.
+ 
+ Vuforia is a trademark of QUALCOMM Incorporated, registered in the United States
+ and other countries. Trademarks of QUALCOMM Incorporated are used with permission.
+ ===============================================================================*/
 
 #import "ImageTargetsViewController.h"
 #import <QCAR/QCAR.h>
@@ -23,10 +23,10 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        vapp = [[SampleApplicationSession alloc] initWithDelegate:self];
+        vapp = [[TimeMachineSession alloc] initWithDelegate:self];
         
         // Custom initialization
-        self.title = @"Image Targets";
+        self.title = @"";
         // Create the EAGLView with the screen dimensions
         CGRect screenBounds = [[UIScreen mainScreen] bounds];
         viewFrame = screenBounds;
@@ -48,10 +48,10 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
         // we use the iOS notification to pause/resume the AR when the application goes (or come back from) background
         
         [[NSNotificationCenter defaultCenter]
-             addObserver:self
-             selector:@selector(pauseAR)
-             name:UIApplicationWillResignActiveNotification
-             object:nil];
+         addObserver:self
+         selector:@selector(pauseAR)
+         name:UIApplicationWillResignActiveNotification
+         object:nil];
         
         [[NSNotificationCenter defaultCenter]
          addObserver:self
@@ -84,7 +84,7 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 - (void)loadView
 {
     // Create the EAGLView
-    eaglView = [[ImageTargetsEAGLView alloc] initWithFrame:viewFrame appSession:vapp];
+    eaglView = [[ImageTargetsEAGLView alloc] initWithFrame:viewFrame appSession:vapp textureFilenames:self.imageFileNames planeVertices:self.imageCoordinates];
     [self setView:eaglView];
     
     // show loading animation while AR is being initialized
@@ -99,8 +99,8 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 {
     [super viewDidLoad];
     [self prepareMenu];
-
-	// Do any additional setup after loading the view.
+    
+    // Do any additional setup after loading the view.
     [self.navigationController setNavigationBarHidden:YES animated:NO];
     [self.view addGestureRecognizer:tapGestureRecognizer];
     
@@ -108,7 +108,7 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    // cleanup menu 
+    // cleanup menu
     [[SampleAppMenu instance]clear];
     
     [vapp stopAR:nil];
@@ -179,13 +179,12 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 }
 
 - (bool) doLoadTrackersData {
-    dataSetStonesAndChips = [self loadImageTrackerDataSet:@"StonesAndChips.xml"];
-    dataSetTarmac = [self loadImageTrackerDataSet:@"Tarmac.xml"];
-    if ((dataSetStonesAndChips == NULL) || (dataSetTarmac == NULL)) {
+    dataSetInstallation = [self loadImageTrackerDataSet:self.xmlName];
+    if (dataSetInstallation == NULL) {
         NSLog(@"Failed to load datasets");
         return NO;
     }
-    if (! [self activateDataSet:dataSetStonesAndChips]) {
+    if (! [self activateDataSet:dataSetInstallation]) {
         NSLog(@"Failed to activate dataset");
         return NO;
     }
@@ -200,7 +199,7 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
     if(tracker == 0) {
         return NO;
     }
-
+    
     tracker->start();
     return YES;
 }
@@ -230,14 +229,7 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 
 
 - (void) onQCARUpdate: (QCAR::State *) state {
-    if (switchToTarmac) {
-        [self activateDataSet:dataSetTarmac];
-        switchToTarmac = NO;
-    }
-    if (switchToStonesAndChips) {
-        [self activateDataSet:dataSetStonesAndChips];
-        switchToStonesAndChips = NO;
-    }
+    //Do nothing, no switching datasets
 }
 
 // Load the image tracker data set
@@ -300,16 +292,12 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
     QCAR::ImageTracker* imageTracker = static_cast<QCAR::ImageTracker*>(trackerManager.getTracker(QCAR::ImageTracker::getClassType()));
     
     // Destroy the data sets:
-    if (!imageTracker->destroyDataSet(dataSetTarmac))
+    if (!imageTracker->destroyDataSet(dataSetInstallation))
     {
-        NSLog(@"Failed to destroy data set Tarmac.");
+        NSLog(@"Failed to destroy installation dataset.");
     }
-    if (!imageTracker->destroyDataSet(dataSetStonesAndChips))
-    {
-        NSLog(@"Failed to destroy data set Stones and Chips.");
-    }
-    
-    NSLog(@"datasets destroyed");
+    else
+        NSLog(@"datasets destroyed");
     return YES;
 }
 
@@ -443,24 +431,16 @@ typedef enum {
 
 - (void) prepareMenu {
     
-    SampleAppMenu * menu = [SampleAppMenu prepareWithCommandProtocol:self title:@"Image Targets"];
+    SampleAppMenu * menu = [SampleAppMenu prepareWithCommandProtocol:self title:@""];
     SampleAppMenuGroup * group;
     
     group = [menu addGroup:@""];
-    [group addTextItem:@"Vuforia Samples" command:-1];
-
-    group = [menu addGroup:@""];
-    [group addSelectionItem:@"Extended Tracking" command:C_EXTENDED_TRACKING isSelected:NO];
+    [group addTextItem:@"Back" command:-1];
+    
+    group = [menu addGroup:@"CAMERA"];
     [group addSelectionItem:@"Autofocus" command:C_AUTOFOCUS isSelected:NO];
     [group addSelectionItem:@"Flash" command:C_FLASH isSelected:NO];
 
-    group = [menu addSelectionGroup:@"CAMERA"];
-    [group addSelectionItem:@"Front" command:C_CAMERA_FRONT isSelected:NO];
-    [group addSelectionItem:@"Rear" command:C_CAMERA_REAR isSelected:YES];
-
-    group = [menu addSelectionGroup:@"DATABASE"];
-    [group addSelectionItem:@"Stones & Chips" command:SWITCH_TO_STONES_AND_CHIPS isSelected:YES];
-    [group addSelectionItem:@"Tarmac" command:SWITCH_TO_TARMAC isSelected:NO];
 }
 
 - (bool) menuProcess:(SampleAppMenu *) menu command:(int) command value:(bool) value{
@@ -493,7 +473,7 @@ typedef enum {
                 // if the camera switch worked, the flash will be off
                 [menu setSelectionValueForCommand:C_FLASH value:false];
             }
-
+            
         }
             break;
             

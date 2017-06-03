@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:Vision Testing.xcodeproj">
+      location = "self:VRTimeMachine.xcodeproj">
    </FileRef>
 </Workspace>

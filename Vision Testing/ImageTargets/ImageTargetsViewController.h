@@ -8,22 +8,24 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 #import <UIKit/UIKit.h>
 #import "SampleAppMenu.h"
 #import "ImageTargetsEAGLView.h"
-#import "SampleApplicationSession.h"
+#import "TimeMachineSession.h"
 #import <QCAR/DataSet.h>
 
 @interface ImageTargetsViewController : UIViewController <SampleApplicationControl, SampleAppMenuCommandProtocol>{
     CGRect viewFrame;
     ImageTargetsEAGLView* eaglView;
     QCAR::DataSet*  dataSetCurrent;
-    QCAR::DataSet*  dataSetTarmac;
-    QCAR::DataSet*  dataSetStonesAndChips;
+    QCAR::DataSet*  dataSetInstallation;
     UITapGestureRecognizer * tapGestureRecognizer;
-    SampleApplicationSession * vapp;
+    TimeMachineSession * vapp;
     
     BOOL switchToTarmac;
     BOOL switchToStonesAndChips;
     BOOL extendedTrackingIsOn;
-    
 }
+@property NSString *datName;
+@property NSString *xmlName;
+@property NSMutableArray *imageCoordinates;
+@property NSMutableArray *imageFileNames;
 
 @end

@@ -43,10 +43,10 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
     BOOL ret = NO;
     
     // Build the full path of the image file
-    NSString* fullPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:filename];
+//    NSString* fullPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:filename];
     
     // Create a UIImage with the contents of the file
-    UIImage* uiImage = [UIImage imageWithContentsOfFile:fullPath];
+    UIImage* uiImage = [UIImage imageWithContentsOfFile:filename];
     
     if (uiImage) {
         // Get the inner CGImage from the UIImage wrapper

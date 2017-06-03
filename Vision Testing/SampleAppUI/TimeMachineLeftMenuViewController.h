@@ -7,15 +7,15 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 
 #import <UIKit/UIKit.h>
 
-@class SampleAppSlidingMenuController;
+@class TimeMachineSlidingMenuController;
 
-@interface SampleAppLeftMenuViewController : UIViewController {
+@interface TimeMachineLeftMenuViewController : UIViewController {
     id observer;
 }
 
 @property(nonatomic,retain) UITableView *tableView;
 
-@property(nonatomic,assign) SampleAppSlidingMenuController *slidingMenuViewController;
+@property(nonatomic,assign) TimeMachineSlidingMenuController *slidingMenuViewController;
 
 - (void) updateMenu;
 

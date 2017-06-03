@@ -60,7 +60,7 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 }
 
 - (void) addApplication:(NSString *)title viewControllerClassName:(NSString *) viewControllerClassName aboutPageName:(NSString *)aboutPageName{
-    SampleApplicationInfo * app = [[[SampleApplicationInfo alloc]init] autorelease];
+    SampleApplicationInfo * app = [[SampleApplicationInfo alloc]init];
     app.title = title;
     app.viewControllerClassName = viewControllerClassName;
     app.aboutPageName = aboutPageName;
@@ -78,12 +78,12 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
     
     if (application.viewControllerClassName != nil) {
         // change the back button
-        self.navigationItem.backBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Back" style: UIBarButtonItemStyleBordered target:nil action:nil] autorelease];
+        self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back" style: UIBarButtonItemStylePlain target:nil action:nil];
         
         // cleanup menu in case the sample app doesn't not set menu items
         [[SampleAppMenu instance]clear];
         
-        SampleAppAboutViewController *vc = [[[SampleAppAboutViewController alloc] initWithNibName:@"SampleAppAboutViewController" bundle:nil] autorelease];
+        SampleAppAboutViewController *vc = [[SampleAppAboutViewController alloc] initWithNibName:@"SampleAppAboutViewController" bundle:nil];
         vc.appTitle = application.title;
         vc.appAboutPageName = application.aboutPageName;
         vc.appViewControllerClassName = application.viewControllerClassName;
@@ -104,7 +104,7 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
     
     // Configure the cell...

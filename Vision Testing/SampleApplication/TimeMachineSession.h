@@ -62,7 +62,7 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 
 @end
 
-@interface SampleApplicationSession : NSObject
+@interface TimeMachineSession : NSObject
 
 - (id)initWithDelegate:(id<SampleApplicationControl>) delegate;
 
@@ -90,6 +90,7 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 @property (nonatomic, readwrite) BOOL isRetinaDisplay;
 @property (nonatomic, readwrite) BOOL cameraIsStarted;
 @property (nonatomic, readwrite) QCAR::Matrix44F projectionMatrix;
+@property (nonatomic, strong) NSMutableArray *planeVertices;
 
 // Viewport geometry
 @property (nonatomic, readwrite) struct tagViewport {

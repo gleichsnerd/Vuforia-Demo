@@ -7,8 +7,10 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 ===============================================================================*/
 
 #import <QuartzCore/QuartzCore.h>
-#import "SampleAppSlidingMenuController.h"
-#import "SampleAppLeftMenuViewController.h"
+#import "TimeMachineSlidingMenuController.h"
+#import "TimeMachineLeftMenuViewController.h"
+
+#import <UIKit/UIKit.h>
 
 
 // the duration of the animation to display the menu
@@ -22,15 +24,15 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 
 #define ANIMATION_DURATION .3
 
-@interface SampleAppSlidingMenuController ()
+@interface TimeMachineSlidingMenuController ()
 - (void)setRootViewControllerShadow:(BOOL)val;
 
-@property(nonatomic,retain) SampleAppLeftMenuViewController *menuViewController;
+@property(nonatomic,retain) TimeMachineLeftMenuViewController *menuViewController;
 @property(nonatomic,retain) UIViewController *rootViewController;
 
 @end
 
-@implementation SampleAppSlidingMenuController
+@implementation TimeMachineSlidingMenuController
 
 @synthesize menuViewController=_menuViewController;
 @synthesize rootViewController=_rootViewController;
@@ -39,13 +41,13 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
     if ((self = [super init])) {
         self.rootViewController = controller;
         // the left view controller is the menu associated to the application
-        SampleAppLeftMenuViewController *  mvc =[[SampleAppLeftMenuViewController alloc] init];
+        TimeMachineLeftMenuViewController *  mvc =[[TimeMachineLeftMenuViewController alloc] init];
         self.menuViewController = mvc;
         self.menuViewController.slidingMenuViewController = self;
         
         CGRect screenBounds = [[UIScreen mainScreen] bounds];
 
-        kSlidingMenuWidth = screenBounds.size.width * 0.85;
+        kSlidingMenuWidth = screenBounds.size.width * 0.65;
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(dismiss)

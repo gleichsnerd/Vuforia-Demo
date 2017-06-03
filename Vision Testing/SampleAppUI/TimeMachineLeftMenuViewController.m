@@ -7,14 +7,14 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 ===============================================================================*/
 
 
-#import "SampleAppLeftMenuViewController.h"
+#import "TimeMachineLeftMenuViewController.h"
 #import "SampleAppMenu.h"
-#import "SampleAppSlidingMenuController.h"
+#import "TimeMachineSlidingMenuController.h"
 
-@interface SampleAppLeftMenuViewController ()
+@interface TimeMachineLeftMenuViewController ()
 @end
 
-@implementation SampleAppLeftMenuViewController
+@implementation TimeMachineLeftMenuViewController
 
 @synthesize tableView=_tableView;
 @synthesize slidingMenuViewController=_slidingMenuViewController;

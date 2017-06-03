@@ -5,7 +5,7 @@ Vuforia is a trademark of QUALCOMM Incorporated, registered in the United States
 and other countries. Trademarks of QUALCOMM Incorporated are used with permission.
 ===============================================================================*/
 
-#import "SampleApplicationSession.h"
+#import "TimeMachineSession.h"
 #import "QCAR/QCAR.h"
 #import "QCAR/QCAR_iOS.h"
 #import "QCAR/Tool.h"
@@ -22,7 +22,7 @@ namespace {
     // used to support the QCAR callback
     // there should be only one instance of a session
     // at any given point of time
-    SampleApplicationSession* instance = nil;
+    TimeMachineSession* instance = nil;
     
     // QCAR initialisation flags (passed to QCAR before initialising)
     int mQCARInitFlags;
@@ -39,7 +39,7 @@ namespace {
     NSString * SAMPLE_APPLICATION_ERROR_DOMAIN = @"vuforia_sample_application";
 }
 
-@interface SampleApplicationSession ()
+@interface TimeMachineSession ()
 
 @property (nonatomic, readwrite) CGSize mARViewBoundsSize;
 @property (nonatomic, readwrite) UIInterfaceOrientation mARViewOrientation;
@@ -53,7 +53,7 @@ namespace {
 @end
 
 
-@implementation SampleApplicationSession
+@implementation TimeMachineSession
 @synthesize viewport;
 
 - (id)initWithDelegate:(id<SampleApplicationControl>) delegate

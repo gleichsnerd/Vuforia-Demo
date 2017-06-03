@@ -32,18 +32,12 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
     
     UIBarButtonItem *startButton = [[UIBarButtonItem alloc] initWithTitle:@"Start" style:UIBarButtonItemStylePlain target:self action:@selector(startButtonTapped:)];
     self.navigationItem.rightBarButtonItem = startButton;
-    [startButton release];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
-}
-
-- (void)dealloc {
-    [_uiWebView release];
-    [super dealloc];
 }
 
 - (void)viewDidUnload {
@@ -58,8 +52,6 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
     SampleAppSlidingMenuController *slidingMenuController = [[SampleAppSlidingMenuController alloc] initWithRootViewController:vc];
     
     [self.navigationController pushViewController:slidingMenuController animated:NO];
-    [slidingMenuController release];
-    [vc release]; // don't leak memory
 }
 
 //------------------------------------------------------------------------------
@@ -117,7 +109,6 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles:nil];
     [alert show];
-    [alert release];
 }
 
 @end

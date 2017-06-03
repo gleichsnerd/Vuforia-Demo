@@ -48,7 +48,7 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
     
     int state = 0;
     
-    while(true) {
+    while(true && fd != NULL) {
         if (fgets(buffer, sizeof(buffer), fd) == NULL) {
             break;
         }
